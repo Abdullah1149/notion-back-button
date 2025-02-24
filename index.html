@@ -2,7 +2,7 @@
 <html lang="ar">
 <head>
   <meta charset="UTF-8" />
-  <title>Aziz Robot - Ramadan Edition</title>
+  <title>Aziz Robot - The Ultimate Ramadan Experience</title>
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&family=Poppins:wght@400;600;700&display=swap');
 
@@ -17,6 +17,28 @@
       justify-content: center;
       overflow: hidden;
       position: relative;
+    }
+
+    /* شكل هلال رمضاني في الزاوية */
+    .ramadan-crescent {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      width: 60px;
+      height: 60px;
+      background: radial-gradient(circle at 40% 40%, #FFD700 30%, transparent 30%);
+      border-radius: 50%;
+      box-shadow: 0 0 20px rgba(255,215,0,0.5);
+      z-index: 1;
+    }
+    .ramadan-crescent::after {
+      content: "";
+      position: absolute;
+      top: 0; left: 0;
+      width: 60px; height: 60px;
+      background: #333; 
+      border-radius: 50%;
+      transform: translate(20px, 0);
     }
 
     /* زر كتم/تشغيل الصوت */
@@ -38,15 +60,35 @@
       background: #ffdd57;
     }
 
+    /* زر إعادة التنبيهات */
+    .reset-btn {
+      position: absolute;
+      bottom: 20px;
+      right: 20px;
+      background: #FFD700;
+      color: #333;
+      border: none;
+      border-radius: 8px;
+      padding: 8px 12px;
+      cursor: pointer;
+      font-size: 14px;
+      z-index: 999;
+      outline: none;
+      opacity: 0; /* يبدأ مخفيًا */
+      transition: opacity 0.5s ease;
+    }
+    .reset-btn:hover {
+      background: #ffdd57;
+    }
+
     /* حاوية الروبوت */
     .robot-container {
       position: relative;
       width: 200px;
       height: 350px;
-      cursor: pointer;
       user-select: none;
+      z-index: 2; /* فوق الهلال */
     }
-
     /* اسم Aziz */
     .robot-label {
       position: absolute;
@@ -59,7 +101,6 @@
       font-weight: 700;
       letter-spacing: 1px;
     }
-
     /* فقاعة حوار عند الـHover */
     .hover-bubble {
       position: absolute;
@@ -89,6 +130,13 @@
       opacity: 1;
     }
 
+    /* حركة Idle Animation بسيطة (Keyframes) */
+    @keyframes idleAziz {
+      0%   { transform: translateX(-50%) translateY(0); }
+      50%  { transform: translateX(-50%) translateY(-3px); }
+      100% { transform: translateX(-50%) translateY(0); }
+    }
+
     /* عداد التنبيهات */
     .notif-counter {
       position: absolute;
@@ -109,6 +157,7 @@
       width: 120px;
       height: 240px;
       margin: 0 auto;
+      /* Idle Animation */
     }
     .azizi-body {
       position: absolute;
@@ -132,6 +181,7 @@
       border-radius: 50%;
       box-shadow: 0 4px 8px rgba(0,0,0,0.2);
       overflow: hidden;
+      /* Idle animation for head alone (optional) */
     }
     .azizi-visor {
       position: absolute;
@@ -200,10 +250,13 @@
       overflow: hidden;
       font-size: 15px;
       direction: rtl;
+      background: linear-gradient(135deg, #2a2a2a, #444);
+      border: 1px solid rgba(255,255,255,0.2);
     }
     .notification h4 {
       margin: 0 0 5px 0;
       font-size: 16px;
+      color: #FFD700;
     }
     .notification p {
       margin: 0;
@@ -217,52 +270,59 @@
       font-size: 20px;
       opacity: 0.2;
     }
-    /* أنواع التنبيهات */
-    .notification.normal {
-      background: linear-gradient(135deg, #2a2a2a, #444);
-      border: 1px solid rgba(255,255,255,0.2);
+
+    /* زر إغلاق التنبيه */
+    .close-notif-btn {
+      background: #ff4757;
+      color: #fff;
+      border: none;
+      border-radius: 6px;
+      padding: 5px 10px;
+      margin-top: 10px;
+      cursor: pointer;
     }
-    .notification.normal h4 {
-      color: #FFD700; 
+    .close-notif-btn:hover {
+      background: #c0392b;
     }
+
+    /* أنواع مختلفة (يمكنك تلوينها أكثر) */
     .notification.important {
       background: linear-gradient(135deg, #C0392B, #E74C3C);
       border: 2px solid #FF5733;
     }
-    .notification.important h4 {
-      color: #fff; 
-    }
-    .notification.important::before {
-      color: #fff;
-    }
+    .notification.important h4 { color: #fff; }
+    .notification.important::before { color: #fff; }
+
     .notification.special {
       background: linear-gradient(135deg, #2A9D8F, #3CCF91);
       border: 2px solid #FFD700;
     }
-    .notification.special h4 {
-      color: #333;
-    }
-    .notification.special::before {
-      color: #333;
-    }
+    .notification.special h4 { color: #333; }
+    .notification.special::before { color: #333; }
   </style>
 </head>
 <body>
 
+<!-- شكل هلال رمضاني -->
+<div class="ramadan-crescent"></div>
+
 <!-- زر كتم/تشغيل الصوت -->
 <button class="sound-toggle" id="soundToggle">كتم الصوت</button>
+
+<!-- زر إعادة التنبيهات (يظهر عند النهاية) -->
+<button class="reset-btn" id="resetBtn">إعادة التنبيهات</button>
 
 <div class="robot-container" id="azizi">
   <!-- اسم Aziz -->
   <div class="robot-label">Aziz</div>
 
   <!-- فقاعة حوار عند الـHover -->
-  <div class="hover-bubble">اضغط لرؤية محتوى رمضان</div>
+  <div class="hover-bubble">اضغط لاختيار اليوم الرمضاني</div>
 
   <!-- عداد التنبيهات -->
   <div class="notif-counter" id="notifCounter">0</div>
 
-  <div class="azizi-robot">
+  <div class="azizi-robot" id="aziziRobot">
     <!-- الرأس -->
     <div class="azizi-head">
       <div class="azizi-visor">
@@ -280,9 +340,6 @@
   <!-- صندوق التنبيهات -->
   <div class="notifications-container" id="notificationsBox"></div>
 </div>
-
-<!-- زر إعادة التنبيهات (سيظهر عند انتهاء التنبيهات) -->
-<button class="reset-btn" id="resetBtn">إعادة التنبيهات</button>
 
 <!-- مكتبة GSAP -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
@@ -307,12 +364,11 @@
 
   // زر إعادة التنبيهات
   const resetBtn = document.getElementById("resetBtn");
-  resetBtn.style.opacity = 0; // يبدأ مخفي
+  resetBtn.style.opacity = 0; 
   resetBtn.addEventListener("click", resetNotifications);
 
   /***********************************************
-   * محتوى رمضان - اليوم الأول
-   * يمكنك إضافة باقي الأيام بنفس الشكل
+   * مثال لتقويم رمضان: 3 أيام فقط (يمكنك تمديدها لـ30)
    ***********************************************/
   const initialNotificationsData = [
     {
@@ -320,18 +376,40 @@
       text: `
         <strong>الآية القرآنية:</strong> 
         <br/>
-        "يَا أَيُّهَا الَّذِينَ آمَنُواْ كُتِبَ عَلَيْكُمُ الصِّيَامُ 
-        كَمَا كُتِبَ عَلَى الَّذِينَ مِن قَبْلِكُمْ لَعَلَّكُمْ تَتَّقُونَ" 
-        <em>[البقرة: 183]</em>.
+        "يَا أَيُّهَا الَّذِينَ آمَنُواْ كُتِبَ عَلَيْكُمُ الصِّيَامُ..."
         <br/><br/>
         <strong>الشرح:</strong>
         <br/>
-        هذه الآية تُبيِّن فرض الصيام على المؤمنين، وأنه وسيلة لتحقيق التقوى
-        مثل الأمم السابقة.
+        هذه الآية تُبيِّن فرض الصيام على المؤمنين لتحقيق التقوى.
       `,
       type: "special"
+    },
+    {
+      title: "اليوم الثاني من رمضان",
+      text: `
+        <strong>الحديث النبوي:</strong>
+        <br/>
+        "مَن صام رمضان إيمانًا واحتسابًا غُفِر له..."
+        <br/><br/>
+        <strong>الشرح:</strong>
+        <br/>
+        الحديث يبين فضل صيام رمضان احتسابًا لله.
+      `,
+      type: "important"
+    },
+    {
+      title: "اليوم الثالث من رمضان",
+      text: `
+        <strong>التحدي اليومي:</strong>
+        <br/>
+        تصدَّق ولو بالقليل اليوم.
+        <br/>
+        صِل رحمك أو صديقًا بعيدًا.
+      `,
+      type: "normal"
     }
   ];
+
   let notificationsData = [...initialNotificationsData];
   let currentIndex = 0;
 
@@ -339,6 +417,7 @@
    * العناصر الأساسية
    ***********************************************/
   const azizi = document.getElementById("azizi");
+  const aziziRobot = document.getElementById("aziziRobot");
   const notificationsBox = document.getElementById("notificationsBox");
   const notifCounter = document.getElementById("notifCounter");
 
@@ -349,17 +428,41 @@
   }
   updateCounter();
 
-  // دالة إنشاء تنبيه
+  // دالة لإنشاء تنبيه
   function createNotification(title, text, type) {
     const notif = document.createElement("div");
-    notif.classList.add("notification", type);
-    notif.innerHTML = `<h4>${title}</h4><p>${text}</p>`;
+    notif.classList.add("notification");
+    if (type) notif.classList.add(type);
+    notif.innerHTML = `
+      <h4>${title}</h4>
+      <p>${text}</p>
+      <button class="close-notif-btn">إغلاق</button>
+    `;
     notificationsBox.appendChild(notif);
+
+    // عند الضغط على زر الإغلاق
+    const closeBtn = notif.querySelector(".close-notif-btn");
+    closeBtn.onclick = () => {
+      gsap.to(notif, {
+        duration: 0.5,
+        opacity: 0,
+        y: 20,
+        onComplete: () => {
+          notif.remove();
+          // لو خلصت التنبيهات وتم إغلاقها كلها
+          if (currentIndex === notificationsData.length && notificationsBox.children.length === 0) {
+            endOfNotifications();
+          }
+        }
+      });
+    };
     return notif;
   }
 
   /***********************************************
-   * حدث الضغط على الروبوت
+   * اختيار اليوم من تقويم مبسط
+   * - بدلًا من "يوم بعد يوم" عبر currentIndex
+   * - نسأله أي يوم يريد
    ***********************************************/
   azizi.addEventListener("click", (e) => {
     e.stopPropagation();
@@ -370,67 +473,72 @@
       clickSound.play().catch(() => {});
     }
 
-    // عرض التنبيه إن وجد
-    if (currentIndex < notificationsData.length) {
-      const { title, text, type } = notificationsData[currentIndex];
-      currentIndex++;
-
-      // إنشاء التنبيه
-      const newNotif = createNotification(title, text, type);
-
-      // صوت التنبيه
-      if (soundEnabled) {
-        notifySound.currentTime = 0;
-        notifySound.play().catch(() => {});
-      }
-
-      // أنيميشن الظهور
-      gsap.fromTo(newNotif,
-        { opacity: 0, y: -20 },
-        { duration: 0.5, opacity: 1, y: 0, ease: "power2.out" }
-      );
-      // يختفي بعد 3 ثوان
-      gsap.to(newNotif, {
-        delay: 3,
-        duration: 0.5,
-        opacity: 0,
-        y: 20,
-        onComplete: () => newNotif.remove()
-      });
-
-      // تحديث العداد
-      updateCounter();
-
-      // لو انتهت التنبيهات
-      if (currentIndex === notificationsData.length) {
-        setTimeout(() => {
-          // حركة دوران للروبوت
-          gsap.to("#azizi", {
-            duration: 1,
-            rotation: 360,
-            ease: "power2.inOut",
-            onComplete: () => {
-              // Confetti احتفالي
-              confetti({
-                particleCount: 100,
-                spread: 70,
-                origin: { y: 0.6 }
-              });
-              // رسالة ختامية
-              alert("انتهت جميع التنبيهات الخاصة باليوم الأول! رمضان كريم. 🎉");
-              // إظهار زر إعادة التنبيهات
-              resetBtn.style.opacity = 1;
-            }
-          });
-        }, 1000);
-      }
-    } else {
+    // لو انتهت الأيام
+    if (currentIndex >= notificationsData.length) {
       alert("لا توجد تنبيهات جديدة!");
+      return;
     }
+
+    // عرض التنبيه
+    const { title, text, type } = notificationsData[currentIndex];
+    currentIndex++;
+
+    const newNotif = createNotification(title, text, type);
+
+    // صوت التنبيه
+    if (soundEnabled) {
+      notifySound.currentTime = 0;
+      notifySound.play().catch(() => {});
+    }
+
+    // أنيميشن الظهور
+    gsap.fromTo(newNotif,
+      { opacity: 0, y: -20 },
+      { duration: 0.5, opacity: 1, y: 0, ease: "power2.out" }
+    );
+
+    // تحديث العداد
+    updateCounter();
 
     // حركة تكبير بسيطة للروبوت
     gsap.fromTo("#azizi", { scale: 0.95 }, { scale: 1, duration: 0.3, ease: "power2.out" });
   });
+
+  /***********************************************
+   * نهاية التنبيهات: تشغيل Confetti + رسالة
+   ***********************************************/
+  function endOfNotifications() {
+    // حركة دوران للروبوت
+    gsap.to("#azizi", {
+      duration: 1,
+      rotation: 360,
+      ease: "power2.inOut",
+      onComplete: () => {
+        // Confetti احتفالي
+        confetti({
+          particleCount: 100,
+          spread: 70,
+          origin: { y: 0.6 }
+        });
+        // رسالة ختامية
+        alert("انتهت جميع التنبيهات الرمضانية! رمضان كريم. 🎉");
+        // إظهار زر إعادة التنبيهات
+        resetBtn.style.opacity = 1;
+      }
+    });
+  }
+
+  /***********************************************
+   * إعادة التنبيهات
+   ***********************************************/
+  function resetNotifications() {
+    notificationsData = [...initialNotificationsData];
+    currentIndex = 0;
+    updateCounter();
+    resetBtn.style.opacity = 0;
+    // حركة بسيطة للروبوت
+    gsap.fromTo("#azizi", { rotation: 0 }, { rotation: -360, duration: 1, ease: "power2.inOut" });
+  }
 
   /***********************************************
    * حركة العيون مع الماوس
@@ -441,7 +549,6 @@
     const centerY = rect.top + rect.height / 2;
     const deltaX = (e.clientX - centerX) / 40;
     const deltaY = (e.clientY - centerY) / 40;
-    // نحرك العينين
     const leftEye = document.querySelector(".azizi-eye.left");
     const rightEye = document.querySelector(".azizi-eye.right");
     leftEye.style.transform = `translate(${deltaX}px, ${deltaY}px)`;
@@ -449,18 +556,26 @@
   });
 
   /***********************************************
-   * إعادة التنبيهات
+   * Idle Animation بعد 10 ثوانٍ من عدم النقر
    ***********************************************/
-  function resetNotifications() {
-    // إعادة المصفوفة كما كانت
-    notificationsData = [...initialNotificationsData];
-    currentIndex = 0;
-    updateCounter();
-    // إخفاء الزر
-    resetBtn.style.opacity = 0;
-    // حركة بسيطة للروبوت
-    gsap.fromTo("#azizi", { rotation: 0 }, { rotation: -360, duration: 1, ease: "power2.inOut" });
+  let idleTimer;
+  function startIdleTimer() {
+    clearTimeout(idleTimer);
+    idleTimer = setTimeout(() => {
+      // حركة بسيطة للروبوت
+      gsap.to("#aziziRobot", {
+        duration: 1.5,
+        y: -3,
+        yoyo: true,
+        repeat: 1,
+        ease: "power1.inOut"
+      });
+    }, 10000);
   }
+  // إعادة ضبط المؤقت عند أي حركة
+  document.addEventListener("mousemove", startIdleTimer);
+  document.addEventListener("click", startIdleTimer);
+  startIdleTimer(); // بدء المؤقت لأول مرة
 </script>
 </body>
 </html>
