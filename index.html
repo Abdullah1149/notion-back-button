@@ -2,15 +2,12 @@
 <html lang="ar">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Azizi Robot - Modern Notifications</title>
+  <title>Aziz Robot - Ultimate UX</title>
   <style>
-    /* استيراد خطوط عربية وإنجليزية مودرن */
-    @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&family=Poppins:wght@400;600;700&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&family=Poppins:wght@400;600;700&display=swap');
 
-    /* تنسيق الصفحة بخلفية شفافة */
     body {
-      margin: 0;
+      margin: 0; 
       padding: 0;
       font-family: 'Cairo','Poppins', sans-serif;
       background: transparent; /* خلفية شفافة */
@@ -22,65 +19,132 @@
       position: relative;
     }
 
-    /* رسالة ترحيبية */
-    .welcome-message {
+    /* زر كتم/تشغيل الصوت */
+    .sound-toggle {
       position: absolute;
       top: 20px;
-      left: 50%;
-      transform: translateX(-50%);
-      color: #FFD700;
-      font-size: 20px;
-      text-align: center;
-      background: rgba(0,0,0,0.5);
-      padding: 10px 20px;
-      border-radius: 10px;
-      opacity: 0; /* سنُظهرها بالأنيميشن */
+      right: 20px;
+      background: #FFD700;
+      color: #333;
+      border: none;
+      border-radius: 8px;
+      padding: 8px 12px;
+      cursor: pointer;
+      font-size: 14px;
+      z-index: 999;
+      outline: none;
+    }
+    .sound-toggle:hover {
+      background: #ffdd57;
     }
 
-    /* ========== حاوية الروبوت ========== */
+    /* زر إعادة التنبيهات */
+    .reset-btn {
+      position: absolute;
+      bottom: 20px;
+      right: 20px;
+      background: #FFD700;
+      color: #333;
+      border: none;
+      border-radius: 8px;
+      padding: 8px 12px;
+      cursor: pointer;
+      font-size: 14px;
+      z-index: 999;
+      outline: none;
+      opacity: 0; /* يبدأ مخفيًا */
+      transition: opacity 0.5s ease;
+    }
+    .reset-btn:hover {
+      background: #ffdd57;
+    }
+
+    /* حاوية الروبوت */
     .robot-container {
       position: relative;
       width: 200px;
-      height: 330px; /* طول يناسب الرأس والجسم */
+      height: 350px;
       cursor: pointer;
       user-select: none;
     }
-    /* اسم "عزيز" */
+
+    /* اسم Aziz */
     .robot-label {
       position: absolute;
       top: -40px;
       left: 50%;
       transform: translateX(-50%);
       color: #FFD700;
-      font-size: 22px;
-      font-weight: bold;
+      font-family: 'Poppins', sans-serif;
+      font-size: 24px;
+      font-weight: 700;
+      letter-spacing: 1px;
     }
 
-    /* ========== الروبوت "عزيز" (شبيه بـ Eve) ========== */
+    /* فقاعة حوار عند الـHover */
+    .hover-bubble {
+      position: absolute;
+      bottom: 110%;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(0,0,0,0.7);
+      color: #fff;
+      padding: 6px 10px;
+      border-radius: 6px;
+      font-size: 14px;
+      white-space: nowrap;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s ease;
+    }
+    .hover-bubble::after {
+      content: "";
+      position: absolute;
+      top: 100%;
+      left: 50%;
+      transform: translateX(-50%);
+      border: 6px solid transparent;
+      border-top-color: rgba(0,0,0,0.7);
+    }
+    .robot-container:hover .hover-bubble {
+      opacity: 1;
+    }
+
+    /* عداد التنبيهات */
+    .notif-counter {
+      position: absolute;
+      bottom: -30px;
+      left: 50%;
+      transform: translateX(-50%);
+      color: #FFD700;
+      font-size: 16px;
+      background: rgba(0,0,0,0.5);
+      padding: 5px 10px;
+      border-radius: 8px;
+      opacity: 0.9;
+    }
+
+    /* الروبوت (مثل Eve) */
     .azizi-robot {
       position: relative;
       width: 120px;
-      height: 230px; 
+      height: 240px;
       margin: 0 auto;
     }
-
-    /* الجسم البيضاوي */
     .azizi-body {
       position: absolute;
-      top: 90px; /* أنزلناه قليلاً عن الرأس */
+      top: 100px;
       left: 50%;
       transform: translateX(-50%);
       width: 90px;
       height: 140px;
-      background: linear-gradient(135deg, #fefefe, #ccc);
-      border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%; 
+      background: linear-gradient(135deg, #fafafa, #cfcfcf);
+      border-radius: 50% 50% 45% 45%;
       box-shadow: 0 4px 8px rgba(0,0,0,0.2);
     }
-
-    /* الرأس */
     .azizi-head {
       position: absolute;
-      top: 0px;
+      top: 0;
       left: 50%;
       transform: translateX(-50%);
       width: 80px;
@@ -90,19 +154,17 @@
       box-shadow: 0 4px 8px rgba(0,0,0,0.2);
       overflow: hidden;
     }
-    /* واجهة الوجه السوداء */
     .azizi-visor {
       position: absolute;
       top: 15px;
       left: 50%;
       transform: translateX(-50%);
       width: 60px;
-      height: 30px;
+      height: 32px;
       background: #111;
-      border-radius: 15px;
+      border-radius: 16px;
       box-shadow: inset 0 0 8px rgba(255,255,255,0.1);
     }
-    /* العينان المضيئتان */
     .azizi-eye {
       position: absolute;
       top: 7px;
@@ -112,17 +174,12 @@
       border-radius: 50%;
       box-shadow: 0 0 6px #0ff;
     }
-    .azizi-eye.left {
-      left: 12px;
-    }
-    .azizi-eye.right {
-      right: 12px;
-    }
+    .azizi-eye.left { left: 12px; }
+    .azizi-eye.right { right: 12px; }
 
-    /* الذراعان */
     .azizi-arm {
       position: absolute;
-      width: 16px;
+      width: 14px;
       height: 60px;
       background: linear-gradient(135deg, #fefefe, #ccc);
       border-radius: 50%;
@@ -131,17 +188,17 @@
     }
     .azizi-arm.left {
       left: 0;
-      transform: translateX(-50%);
+      transform: translateX(-60%);
     }
     .azizi-arm.right {
       right: 0;
-      transform: translateX(50%);
+      transform: translateX(60%);
     }
 
-    /* ========== صندوق التنبيهات ========== */
+    /* صندوق التنبيهات */
     .notifications-container {
       position: absolute;
-      top: 0px;
+      top: 0;
       left: 50%;
       transform: translate(-50%, -120%);
       width: 300px;
@@ -152,16 +209,18 @@
       z-index: 10;
     }
 
-    /* ========== تصميم التنبيهات ========== */
+    /* تصميم التنبيهات */
     .notification {
       position: relative;
       border-radius: 12px;
       padding: 15px 20px;
       box-shadow: 0 4px 12px rgba(0,0,0,0.2);
-      opacity: 0; /* يبدأ مخفي */
+      opacity: 0;
       transform: translateY(0);
       color: #fff;
       overflow: hidden;
+      font-size: 15px;
+      direction: rtl;
     }
     .notification h4 {
       margin: 0 0 5px 0;
@@ -169,10 +228,8 @@
     }
     .notification p {
       margin: 0;
-      font-size: 14px;
       line-height: 1.5;
     }
-    /* أيقونة ديكور بسيطة */
     .notification::before {
       content: "!";
       position: absolute;
@@ -181,8 +238,7 @@
       font-size: 20px;
       opacity: 0.2;
     }
-
-    /* ========== أنواع التنبيهات ========== */
+    /* أنواع التنبيهات */
     .notification.normal {
       background: linear-gradient(135deg, #2a2a2a, #444);
       border: 1px solid rgba(255,255,255,0.2);
@@ -190,7 +246,6 @@
     .notification.normal h4 {
       color: #FFD700; 
     }
-
     .notification.important {
       background: linear-gradient(135deg, #C0392B, #E74C3C);
       border: 2px solid #FF5733;
@@ -201,7 +256,6 @@
     .notification.important::before {
       color: #fff;
     }
-
     .notification.special {
       background: linear-gradient(135deg, #2A9D8F, #3CCF91);
       border: 2px solid #FFD700;
@@ -216,14 +270,22 @@
 </head>
 <body>
 
-<!-- رسالة ترحيبية -->
-<div class="welcome-message" id="welcomeMessage">
-  👋 Hello dear user! <br/>
-  We have <span style="color:#FFD700;">many</span> new updates for you.
-</div>
+<!-- زر كتم/تشغيل الصوت -->
+<button class="sound-toggle" id="soundToggle">كتم الصوت</button>
+
+<!-- زر إعادة التنبيهات -->
+<button class="reset-btn" id="resetBtn">إعادة التنبيهات</button>
 
 <div class="robot-container" id="azizi">
-  <div class="robot-label">عزيز</div>
+  <!-- اسم Aziz -->
+  <div class="robot-label">Aziz</div>
+
+  <!-- فقاعة حوار عند الـHover -->
+  <div class="hover-bubble">اضغط للحصول على التنبيهات</div>
+
+  <!-- عداد التنبيهات -->
+  <div class="notif-counter" id="notifCounter">0</div>
+
   <div class="azizi-robot">
     <!-- الرأس -->
     <div class="azizi-head">
@@ -243,67 +305,70 @@
   <div class="notifications-container" id="notificationsBox"></div>
 </div>
 
-<!-- مكتبة GSAP للأنيميشن -->
+<!-- مكتبة GSAP -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+<!-- مكتبة Confetti -->
+<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
 <script>
-  /****************************************************
-   * إعداد الأصوات - استخدم روابط مباشرة (HTTPS)
-   * تأكد من عمل الصفحة على خادم وليس file://
-   ****************************************************/
+  /* الأصوات */
+  let soundEnabled = true;
   const clickSound = new Audio("https://assets.mixkit.co/sfx/preview/mixkit-arcade-game-jump-coin-216.wav");
   clickSound.volume = 0.5;
-
   const notifySound = new Audio("https://assets.mixkit.co/sfx/preview/mixkit-interface-hint-notification-911.wav");
   notifySound.volume = 0.5;
 
-  // مصفوفة التنبيهات - لاحظ إضافة خاصية type لكل تنبيه
-  const notificationsData = [
-    {
-      title: "Normal Alert",
-      text: "📢 Wednesday Electronics sections have been canceled.",
-      type: "normal"
-    },
-    {
-      title: "Important Alert",
-      text: "⚠️ Any absence in Calculus section = minus one.",
-      type: "important"
-    },
-    {
-      title: "Special Update",
-      text: "🆕 New updates in Organizational Behavior.",
-      type: "special"
-    },
-    {
-      title: "Normal Alert",
-      text: "📌 The first Electronics Lab experiment is now available.",
-      type: "normal"
-    }
-  ];
+  // زر كتم الصوت
+  const soundToggle = document.getElementById("soundToggle");
+  soundToggle.addEventListener("click", () => {
+    soundEnabled = !soundEnabled;
+    soundToggle.textContent = soundEnabled ? "كتم الصوت" : "تشغيل الصوت";
+  });
 
-  let currentIndex = 0; // مؤشر التنبيه الحالي
+  // زر إعادة التنبيهات
+  const resetBtn = document.getElementById("resetBtn");
+  resetBtn.style.opacity = 0; // يبدأ مخفي
+  resetBtn.addEventListener("click", resetNotifications);
+
+  // بيانات التنبيهات الأصلية
+  const initialNotificationsData = [
+    { title: "تنبيه عادي", text: "📢 تم إلغاء سكاشن الأربعاء.", type: "normal" },
+    { title: "تنبيه مهم", text: "⚠️ أي غياب في السكشن = سالب واحد.", type: "important" },
+    { title: "تنبيه خاص", text: "🆕 تمت إضافة تحديثات جديدة!", type: "special" },
+    { title: "تنبيه عادي", text: "📌 التجربة الأولى متاحة للتحميل.", type: "normal" }
+  ];
+  let notificationsData = [...initialNotificationsData];
+  let currentIndex = 0;
+
   const azizi = document.getElementById("azizi");
   const notificationsBox = document.getElementById("notificationsBox");
+  const notifCounter = document.getElementById("notifCounter");
 
-  // دالة لإنشاء تنبيه جديد
+  // دالة تحديث عداد التنبيهات
+  function updateCounter() {
+    const left = notificationsData.length - currentIndex;
+    notifCounter.textContent = left.toString();
+  }
+  updateCounter();
+
+  // دالة لإنشاء تنبيه
   function createNotification(title, text, type) {
     const notif = document.createElement("div");
-    notif.classList.add("notification", type); // إضافة نوع التنبيه كـ Class
+    notif.classList.add("notification", type);
     notif.innerHTML = `<h4>${title}</h4><p>${text}</p>`;
     notificationsBox.appendChild(notif);
     return notif;
   }
 
-  // عرض التنبيه عند الضغط على عزيز
+  // عند النقر على الروبوت
   azizi.addEventListener("click", (e) => {
     e.stopPropagation();
 
-    // تشغيل صوت النقر
-    clickSound.currentTime = 0;
-    clickSound.play().catch(err => {
-      console.warn("Click sound error:", err);
-    });
+    // صوت النقر
+    if (soundEnabled) {
+      clickSound.currentTime = 0;
+      clickSound.play().catch(() => {});
+    }
 
-    // لو فيه تنبيهات متبقية
     if (currentIndex < notificationsData.length) {
       const { title, text, type } = notificationsData[currentIndex];
       currentIndex++;
@@ -311,23 +376,18 @@
       // إنشاء التنبيه
       const newNotif = createNotification(title, text, type);
 
-      // تشغيل صوت التنبيه
-      notifySound.currentTime = 0;
-      notifySound.play().catch(err => {
-        console.warn("Notify sound error:", err);
-      });
+      // صوت التنبيه
+      if (soundEnabled) {
+        notifySound.currentTime = 0;
+        notifySound.play().catch(() => {});
+      }
 
-      // حركة الظهور (Fade In + Translate)
+      // أنيميشن الظهور
       gsap.fromTo(newNotif,
         { opacity: 0, y: -20 },
-        {
-          duration: 0.5,
-          opacity: 1,
-          y: 0,
-          ease: "power2.out"
-        }
+        { duration: 0.5, opacity: 1, y: 0, ease: "power2.out" }
       );
-      // اختفاء بعد 3 ثوان
+      // يختفي بعد 3 ثوان
       gsap.to(newNotif, {
         delay: 3,
         duration: 0.5,
@@ -335,33 +395,66 @@
         y: 20,
         onComplete: () => newNotif.remove()
       });
+
+      // تحديث العداد
+      updateCounter();
+
+      // لو خلصت التنبيهات
+      if (currentIndex === notificationsData.length) {
+        // Confetti + حركة الروبوت
+        setTimeout(() => {
+          // حركة دوران بسيطة
+          gsap.to("#azizi", {
+            duration: 1,
+            rotation: 360,
+            ease: "power2.inOut",
+            onComplete: () => {
+              // Confetti احتفالي
+              confetti({
+                particleCount: 100,
+                spread: 70,
+                origin: { y: 0.6 }
+              });
+              // رسالة نهائية
+              alert("انتهت جميع التنبيهات! شكرًا لاستخدامك Aziz. 🎉");
+              // إظهار زر إعادة التنبيهات
+              resetBtn.style.opacity = 1;
+            }
+          });
+        }, 1000);
+      }
     } else {
-      alert("No more notifications!");
+      alert("لا توجد تنبيهات جديدة!");
     }
 
-    // حركة بسيطة للروبوت (تكبير عند الضغط)
+    // حركة تكبير بسيطة للروبوت
     gsap.fromTo("#azizi", { scale: 0.95 }, { scale: 1, duration: 0.3, ease: "power2.out" });
   });
 
-  // عند الضغط خارج عزيز (اختياري)
-  document.addEventListener("click", () => {
-    // لو حابب عند الضغط خارج عزيز نخفي التنبيهات الحالية
-    // (أزل التعليق لو أردت تفعيل هذا السلوك)
-    /*
-    const allNotifs = document.querySelectorAll(".notification");
-    allNotifs.forEach((notif) => {
-      gsap.to(notif, { duration: 0.5, opacity: 0, y: 20, onComplete: () => notif.remove() });
-    });
-    */
+  // حركة عيون الروبوت تجاه الماوس
+  document.addEventListener("mousemove", (e) => {
+    const rect = azizi.getBoundingClientRect();
+    const centerX = rect.left + rect.width / 2;
+    const centerY = rect.top + rect.height / 2;
+    const deltaX = (e.clientX - centerX) / 40; // تقسيم لجعل الحركة أخف
+    const deltaY = (e.clientY - centerY) / 40;
+    // نحرك العينين
+    const leftEye = document.querySelector(".azizi-eye.left");
+    const rightEye = document.querySelector(".azizi-eye.right");
+    leftEye.style.transform = `translate(${deltaX}px, ${deltaY}px)`;
+    rightEye.style.transform = `translate(${deltaX}px, ${deltaY}px)`;
   });
 
-  // إظهار الرسالة الترحيبية بالأنيميشن
-  window.addEventListener("load", () => {
-    gsap.fromTo("#welcomeMessage",
-      { opacity: 0, y: -20 },
-      { opacity: 1, y: 0, duration: 1, delay: 0.5 }
-    );
-  });
+  // دالة لإعادة التنبيهات
+  function resetNotifications() {
+    notificationsData = [...initialNotificationsData];
+    currentIndex = 0;
+    updateCounter();
+    // إخفاء الزر
+    resetBtn.style.opacity = 0;
+    // ممكن إضافة حركة للروبوت كإشارة لإعادة الضبط
+    gsap.fromTo("#azizi", { rotation: 0 }, { rotation: -360, duration: 1, ease: "power2.inOut" });
+  }
 </script>
 </body>
 </html>
