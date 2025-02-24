@@ -1,14 +1,367 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ar">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Back Button</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Azizi Robot - Modern Notifications</title>
+  <style>
+    /* استيراد خطوط عربية وإنجليزية مودرن */
+    @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&family=Poppins:wght@400;600;700&display=swap');
+
+    /* تنسيق الصفحة بخلفية شفافة */
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: 'Cairo','Poppins', sans-serif;
+      background: transparent; /* خلفية شفافة */
+      height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      position: relative;
+    }
+
+    /* رسالة ترحيبية */
+    .welcome-message {
+      position: absolute;
+      top: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      color: #FFD700;
+      font-size: 20px;
+      text-align: center;
+      background: rgba(0,0,0,0.5);
+      padding: 10px 20px;
+      border-radius: 10px;
+      opacity: 0; /* سنُظهرها بالأنيميشن */
+    }
+
+    /* ========== حاوية الروبوت ========== */
+    .robot-container {
+      position: relative;
+      width: 200px;
+      height: 330px; /* طول يناسب الرأس والجسم */
+      cursor: pointer;
+      user-select: none;
+    }
+    /* اسم "عزيز" */
+    .robot-label {
+      position: absolute;
+      top: -40px;
+      left: 50%;
+      transform: translateX(-50%);
+      color: #FFD700;
+      font-size: 22px;
+      font-weight: bold;
+    }
+
+    /* ========== الروبوت "عزيز" (شبيه بـ Eve) ========== */
+    .azizi-robot {
+      position: relative;
+      width: 120px;
+      height: 230px; 
+      margin: 0 auto;
+    }
+
+    /* الجسم البيضاوي */
+    .azizi-body {
+      position: absolute;
+      top: 90px; /* أنزلناه قليلاً عن الرأس */
+      left: 50%;
+      transform: translateX(-50%);
+      width: 90px;
+      height: 140px;
+      background: linear-gradient(135deg, #fefefe, #ccc);
+      border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%; 
+      box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    }
+
+    /* الرأس */
+    .azizi-head {
+      position: absolute;
+      top: 0px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 80px;
+      height: 80px;
+      background: #fefefe;
+      border-radius: 50%;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+      overflow: hidden;
+    }
+    /* واجهة الوجه السوداء */
+    .azizi-visor {
+      position: absolute;
+      top: 15px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 60px;
+      height: 30px;
+      background: #111;
+      border-radius: 15px;
+      box-shadow: inset 0 0 8px rgba(255,255,255,0.1);
+    }
+    /* العينان المضيئتان */
+    .azizi-eye {
+      position: absolute;
+      top: 7px;
+      width: 8px;
+      height: 8px;
+      background: #0ff;
+      border-radius: 50%;
+      box-shadow: 0 0 6px #0ff;
+    }
+    .azizi-eye.left {
+      left: 12px;
+    }
+    .azizi-eye.right {
+      right: 12px;
+    }
+
+    /* الذراعان */
+    .azizi-arm {
+      position: absolute;
+      width: 16px;
+      height: 60px;
+      background: linear-gradient(135deg, #fefefe, #ccc);
+      border-radius: 50%;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+      top: 60px;
+    }
+    .azizi-arm.left {
+      left: 0;
+      transform: translateX(-50%);
+    }
+    .azizi-arm.right {
+      right: 0;
+      transform: translateX(50%);
+    }
+
+    /* ========== صندوق التنبيهات ========== */
+    .notifications-container {
+      position: absolute;
+      top: 0px;
+      left: 50%;
+      transform: translate(-50%, -120%);
+      width: 300px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      pointer-events: none;
+      z-index: 10;
+    }
+
+    /* ========== تصميم التنبيهات ========== */
+    .notification {
+      position: relative;
+      border-radius: 12px;
+      padding: 15px 20px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+      opacity: 0; /* يبدأ مخفي */
+      transform: translateY(0);
+      color: #fff;
+      overflow: hidden;
+    }
+    .notification h4 {
+      margin: 0 0 5px 0;
+      font-size: 16px;
+    }
+    .notification p {
+      margin: 0;
+      font-size: 14px;
+      line-height: 1.5;
+    }
+    /* أيقونة ديكور بسيطة */
+    .notification::before {
+      content: "!";
+      position: absolute;
+      left: 15px;
+      top: 15px;
+      font-size: 20px;
+      opacity: 0.2;
+    }
+
+    /* ========== أنواع التنبيهات ========== */
+    .notification.normal {
+      background: linear-gradient(135deg, #2a2a2a, #444);
+      border: 1px solid rgba(255,255,255,0.2);
+    }
+    .notification.normal h4 {
+      color: #FFD700; 
+    }
+
+    .notification.important {
+      background: linear-gradient(135deg, #C0392B, #E74C3C);
+      border: 2px solid #FF5733;
+    }
+    .notification.important h4 {
+      color: #fff; 
+    }
+    .notification.important::before {
+      color: #fff;
+    }
+
+    .notification.special {
+      background: linear-gradient(135deg, #2A9D8F, #3CCF91);
+      border: 2px solid #FFD700;
+    }
+    .notification.special h4 {
+      color: #333;
+    }
+    .notification.special::before {
+      color: #333;
+    }
+  </style>
 </head>
-<body style="text-align: center; font-family: Arial, sans-serif; margin-top: 50px;">
-    <button onclick="window.history.back()" 
-            style="padding: 12px 20px; font-size: 18px; cursor: pointer; background: #007aff; color: white; border: none; border-radius: 8px;">
-        🔙 Go Back
-    </button>
+<body>
+
+<!-- رسالة ترحيبية -->
+<div class="welcome-message" id="welcomeMessage">
+  👋 Hello dear user! <br/>
+  We have <span style="color:#FFD700;">many</span> new updates for you.
+</div>
+
+<div class="robot-container" id="azizi">
+  <div class="robot-label">عزيز</div>
+  <div class="azizi-robot">
+    <!-- الرأس -->
+    <div class="azizi-head">
+      <div class="azizi-visor">
+        <div class="azizi-eye left"></div>
+        <div class="azizi-eye right"></div>
+      </div>
+    </div>
+    <!-- الجسم -->
+    <div class="azizi-body"></div>
+    <!-- الذراعان -->
+    <div class="azizi-arm left"></div>
+    <div class="azizi-arm right"></div>
+  </div>
+
+  <!-- صندوق التنبيهات -->
+  <div class="notifications-container" id="notificationsBox"></div>
+</div>
+
+<!-- مكتبة GSAP للأنيميشن -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+<script>
+  /****************************************************
+   * إعداد الأصوات - استخدم روابط مباشرة (HTTPS)
+   * تأكد من عمل الصفحة على خادم وليس file://
+   ****************************************************/
+  const clickSound = new Audio("https://assets.mixkit.co/sfx/preview/mixkit-arcade-game-jump-coin-216.wav");
+  clickSound.volume = 0.5;
+
+  const notifySound = new Audio("https://assets.mixkit.co/sfx/preview/mixkit-interface-hint-notification-911.wav");
+  notifySound.volume = 0.5;
+
+  // مصفوفة التنبيهات - لاحظ إضافة خاصية type لكل تنبيه
+  const notificationsData = [
+    {
+      title: "Normal Alert",
+      text: "📢 Wednesday Electronics sections have been canceled.",
+      type: "normal"
+    },
+    {
+      title: "Important Alert",
+      text: "⚠️ Any absence in Calculus section = minus one.",
+      type: "important"
+    },
+    {
+      title: "Special Update",
+      text: "🆕 New updates in Organizational Behavior.",
+      type: "special"
+    },
+    {
+      title: "Normal Alert",
+      text: "📌 The first Electronics Lab experiment is now available.",
+      type: "normal"
+    }
+  ];
+
+  let currentIndex = 0; // مؤشر التنبيه الحالي
+  const azizi = document.getElementById("azizi");
+  const notificationsBox = document.getElementById("notificationsBox");
+
+  // دالة لإنشاء تنبيه جديد
+  function createNotification(title, text, type) {
+    const notif = document.createElement("div");
+    notif.classList.add("notification", type); // إضافة نوع التنبيه كـ Class
+    notif.innerHTML = `<h4>${title}</h4><p>${text}</p>`;
+    notificationsBox.appendChild(notif);
+    return notif;
+  }
+
+  // عرض التنبيه عند الضغط على عزيز
+  azizi.addEventListener("click", (e) => {
+    e.stopPropagation();
+
+    // تشغيل صوت النقر
+    clickSound.currentTime = 0;
+    clickSound.play().catch(err => {
+      console.warn("Click sound error:", err);
+    });
+
+    // لو فيه تنبيهات متبقية
+    if (currentIndex < notificationsData.length) {
+      const { title, text, type } = notificationsData[currentIndex];
+      currentIndex++;
+
+      // إنشاء التنبيه
+      const newNotif = createNotification(title, text, type);
+
+      // تشغيل صوت التنبيه
+      notifySound.currentTime = 0;
+      notifySound.play().catch(err => {
+        console.warn("Notify sound error:", err);
+      });
+
+      // حركة الظهور (Fade In + Translate)
+      gsap.fromTo(newNotif,
+        { opacity: 0, y: -20 },
+        {
+          duration: 0.5,
+          opacity: 1,
+          y: 0,
+          ease: "power2.out"
+        }
+      );
+      // اختفاء بعد 3 ثوان
+      gsap.to(newNotif, {
+        delay: 3,
+        duration: 0.5,
+        opacity: 0,
+        y: 20,
+        onComplete: () => newNotif.remove()
+      });
+    } else {
+      alert("No more notifications!");
+    }
+
+    // حركة بسيطة للروبوت (تكبير عند الضغط)
+    gsap.fromTo("#azizi", { scale: 0.95 }, { scale: 1, duration: 0.3, ease: "power2.out" });
+  });
+
+  // عند الضغط خارج عزيز (اختياري)
+  document.addEventListener("click", () => {
+    // لو حابب عند الضغط خارج عزيز نخفي التنبيهات الحالية
+    // (أزل التعليق لو أردت تفعيل هذا السلوك)
+    /*
+    const allNotifs = document.querySelectorAll(".notification");
+    allNotifs.forEach((notif) => {
+      gsap.to(notif, { duration: 0.5, opacity: 0, y: 20, onComplete: () => notif.remove() });
+    });
+    */
+  });
+
+  // إظهار الرسالة الترحيبية بالأنيميشن
+  window.addEventListener("load", () => {
+    gsap.fromTo("#welcomeMessage",
+      { opacity: 0, y: -20 },
+      { opacity: 1, y: 0, duration: 1, delay: 0.5 }
+    );
+  });
+</script>
 </body>
 </html>
